@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 func main(){
-	fmt.Println("hollup... let him cook")
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("domain\n")
 }
