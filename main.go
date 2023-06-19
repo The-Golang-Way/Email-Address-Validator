@@ -20,4 +20,7 @@ func checkDomain(domain string){
 	var hasMX bool
 
 	mxRecords, err := net.LookupMX(domain)
+	if err != nil {
+		panic(err)
+	}
 }
