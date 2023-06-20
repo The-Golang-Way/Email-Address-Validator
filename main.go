@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
 
 func main(){
@@ -17,9 +18,9 @@ func main(){
 }
 
 func checkDomain(domain string){
-	var hasMX bool
+	var hasMX, hasSPF bool
 
-	// checking mxRecords
+	// checking MX records
 	mxRecords, err := net.LookupMX(domain)
 	if err != nil {
 		fmt.Println(err)
@@ -29,4 +30,16 @@ func checkDomain(domain string){
 		hasMx = true
 	}
 
+	txtRecords, err := net.LookupTXT(domain)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(2)
+	}
+	// deadass why am i so stupid
+	for _, record := range txtRecords{
+		if strings.HasPrefix(record, "v=spf1"){
+			hasSPF = true
+			break
+		}
+	}
 }
