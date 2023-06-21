@@ -10,7 +10,7 @@ import (
 
 func main(){
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("hasMX\n")
+	fmt.Println("domain, hasMX, hasSPF, spfString, hasDMARC, dmarcString")
 
 	for scanner.Scan(){
 		checkDomain(scanner.Text())
@@ -19,6 +19,7 @@ func main(){
 
 func checkDomain(domain string){
 	var hasMX, hasSPF, hasDMARC bool
+	var dmarcString, spfString string
 
 	// checking MX records
 	mxRecords, err := net.LookupMX(domain)
@@ -39,6 +40,7 @@ func checkDomain(domain string){
 	for _, record := range txtRecords{
 		if strings.HasPrefix(record, "v=spf1"){
 			hasSPF = true
+			spfString = record
 			break
 		}
 	}
@@ -52,9 +54,10 @@ func checkDomain(domain string){
 	for _, record := range dmarcRecords{
 		if strings.HasPrefix(record, "v=DMARC1"){
 			hasDMARC = true
+			dmarcString = record
 			break
 		}
 	}
 
-	fmt.Printf("%v, %v, %v, %v", domain, hasMX, hasSPF, hasDMARC)
+	fmt.Printf("%v, %v, %v, %v, %v, %v\n", domain, hasMX, hasSPF, spfString, hasDMARC, dmarcString)
 }
