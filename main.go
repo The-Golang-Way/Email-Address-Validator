@@ -6,11 +6,14 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 func main(){
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("domain, hasMX, hasSPF, spfString, hasDMARC, dmarcString")
+	fmt.Println("Hey there! I will check the MX, SPF, and DMARC records for you to validate the domain name!")
+	fmt.Print("Please enter the domain name (e.g., 'gmail.com'): ")
 
 	for scanner.Scan(){
 		checkDomain(scanner.Text())
@@ -25,6 +28,7 @@ func checkDomain(domain string){
 	mxRecords, err := net.LookupMX(domain)
 	if err != nil {
 		fmt.Println(err)
+		color.Yellow("uh-oh, seems like you forgot the gTLD (.com) or ccTLD (.ca)!")
 		os.Exit(1)
 	}
 	if len(mxRecords) > 0 {
@@ -48,6 +52,7 @@ func checkDomain(domain string){
 	dmarcRecords, err := net.LookupTXT("_dmarc." + domain)
 	if err != nil {
 		fmt.Println(err)
+		color.Red("uh-oh, email address does not exist!")
 		os.Exit(3)
 	}
 
@@ -59,5 +64,22 @@ func checkDomain(domain string){
 		}
 	}
 
-	fmt.Printf("%v, %v, %v, %v, %v, %v\n", domain, hasMX, hasSPF, spfString, hasDMARC, dmarcString)
+	fmt.Printf("Domain searched: %v\n", domain)
+	fmt.Println("Results found:")
+	if hasMX{
+		fmt.Printf("MX Records: %v\n", color.GreenString("true"))
+	} else {
+		fmt.Printf("MX Records: %v\n", color.RedString("false"))
+	}
+	if hasSPF{
+		fmt.Printf("SPF Records: %v\t\t%v\n", color.GreenString("true"), spfString)
+	} else {
+		fmt.Printf("SPF Records: %v\t\t%v\n", color.RedString("false"), spfString)
+	}
+	if hasDMARC{
+		fmt.Printf("DMARC Records: %v\t\t%v\n", color.GreenString("true"), dmarcString)
+	} else {
+		fmt.Printf("DMARC Records: %v\t\t%v\n", color.RedString("false"), dmarcString)
+	}
+	fmt.Print("Want to validate another? If so, type it here: ")
 }
