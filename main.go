@@ -34,13 +34,14 @@ func checkDomain(domain string){
 	if len(mxRecords) > 0 {
 		hasMX = true
 	}
-
+  
 	txtRecords, err := net.LookupTXT(domain)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
 	}
-	// deadass why am i so stupid
+  
+  // checking SPF records
 	for _, record := range txtRecords{
 		if strings.HasPrefix(record, "v=spf1"){
 			hasSPF = true
@@ -49,6 +50,7 @@ func checkDomain(domain string){
 		}
 	}
 
+  // checking DMARC records
 	dmarcRecords, err := net.LookupTXT("_dmarc." + domain)
 	if err != nil {
 		fmt.Println(err)
